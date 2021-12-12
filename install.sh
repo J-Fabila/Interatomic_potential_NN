@@ -1,11 +1,11 @@
 echo  -e \\e[94m "Downloading necessary files"
 
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/atomicpp.h
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/forces.cpp
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/distortions.cpp
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/sampling.py
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/extractor.py
-wget https://github.com/J-Fabila/interatomic_potential/edit/master/input.txt
+wget https://raw.githubusercontent.com/J-Fabila/VASP_to_XYZ/master/atomicpp.h
+wget https://raw.githubusercontent.com/J-Fabila/Interatomic_potential_NN/main/geometrias.cpp
+wget https://raw.githubusercontent.com/J-Fabila/Interatomic_potential_NN/main/distortions.cpp
+wget https://raw.githubusercontent.com/J-Fabila/Interatomic_potential_NN/main/sampling.py
+wget https://raw.githubusercontent.com/J-Fabila/Interatomic_potential_NN/main/extractor.py
+wget https://raw.githubusercontent.com/J-Fabila/Interatomic_potential_NN/main/input.txt
 
 
 echo  -e \\e[94m "Compiling executables"
