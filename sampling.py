@@ -117,7 +117,7 @@ axs[0].legend(loc="lower right",fontsize=15)
 #axs[1].plot(std_lower,label="Mean+Std",linewidth=4.0,marker='o')
 #axs[1].plot(std_upper,label="Mean-Std",linewidth=4.0,marker='o')
 
-fig.savefig("selected_forces.png") # Esto guarda la figura como en formato png.
+fig.savefig("selected_points.png") # Esto guarda la figura como en formato png.
 
 accepted_index=list(tot_accepted.index)
 
