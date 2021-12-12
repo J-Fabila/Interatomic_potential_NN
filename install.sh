@@ -16,7 +16,7 @@ chmod +x extractor.sh
 g++ -o forces.exe forces.cpp -lm
 g++ -o geometries.exe distortions.cpp -lm
 
-rm atomicpp.h
+rm atomicpp.h forces.cpp distortions.cpp
 
 echo  -e \\e[32m " #########################################################"
 echo  -e \\e[32m " #################################################### Done"
