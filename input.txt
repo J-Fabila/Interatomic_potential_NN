@@ -2,5 +2,11 @@
 /_/_/_/_/_/_/ Interatomic Potential Neural Network Input File /_/_/_/_/_/_/_/_/
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+calculation = 1 # 1-Process of Data  2-Resample data set  3-Train model
+
 type_of_sampling = 1 #  1-Monte Carlo    2-Uniform   3-Random
+
+sampling_size = 0.5  # Fraction to sample from the entire MD steps
+
+
 
