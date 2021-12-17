@@ -55,14 +55,33 @@ echo " "
 echo  -e \\e[32m "Extracting atomic forces" ; echo " "
 pv $1 | grep -A40 "Total atomic forces (unitary forces cleaned)"  | grep "|" > fuerzas
 # Idem: Capaz k lo podríamos hacer en el mismo loop
-echo " "
+echo " " ; echo " " ; echo " "
 echo  -e \\e[32m "Preparing formatted files" ; echo " "
+######################################################################
+function redraw_progress_bar { # int barsize, int base, int i, int top
+    local barsize=$1
+    local base=$2
+    local current=$3
+    local top=$4        
+    local j=0 
+    local progress=$(( ($barsize * ( $current - $base )) / ($top - $base ) )) 
+    echo -n "["
+    for ((j=0; j < $progress; j++)) ; do echo -n '='; done
+    echo -n '=>'
+    for ((j=$progress; j < $barsize ; j++)) ; do echo -n ' '; done
+    echo -ne "] $(( $current )) / $top " $'\r'
+}
+
+######################################################################
+
 for ((i=$Nat;i<=$(($Nconf*$Nat));i=i+$Nat))
 do
    j=$(($i/$Nat))
    head -$i posiciones   | tail -$Nat > posiciones_$j.fhi
    head -$i velocidades  | tail -$Nat > velocidades_$j.fhi
    head -$i fuerzas  | tail -$Nat > fuerzas_$j.fhi
+
+    redraw_progress_bar 50 1 $j $Nconf
 
 ###################################################################
 echo "begin"> coords_$j
@@ -87,14 +106,17 @@ cat coords_$j | tr '\t' ' ' > coords_$j.fhi
 rm coords_$j
 ###################################################################
 
-   echo "Preparing step $j/$Nconf"
+#   echo "Preparing step $j/$Nconf"
+echo -ne "[\r"
 done
+echo " " ; echo " " ; echo " " ;
+
 rm posiciones velocidades fuerzas temp_coords*
 echo " "
-echo "Calculating mean forces and collecting into forces.csv"
+echo "Calculating average of forces and collecting into forces.csv"
 echo " "
 ./forces.exe > forces.csv
-echo "Calculating mean geometric distortions and collecting into desv.csv"
+echo "Calculating average geometric distortions and collecting into desv.csv"
 echo " "
 ./geometries.exe > desv.csv
 
