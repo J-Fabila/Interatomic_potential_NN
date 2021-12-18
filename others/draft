@@ -1,15 +1,43 @@
-echo -e \\e[32m "Reading input file " ; echo " "
-echo "No input file provided ... reading default \"input.txt\" file" ; echo " "
+echo -e \\e[32m  " "
+
+case $# in
+   0)
+      echo -e \\e[91m "No input data file provided"
+
+      exit
+   ;;
+   1)
+      echo "No input file provided ... reading default \"input.txt\" file" ; echo " "
+      input_file=input.txt
+   ;;
+   2)
+      echo "Reading input file \"$2\" "
+      input_file=$(echo $2)
+   ;;
+esac
+
+if ! [ -f $input_file ]
+then
+   echo  -e \\e[91m " $input_file does not exists"
+   exit
+fi
+
+if ! [ -f $1 ]
+then
+   echo  -e \\e[91m " $1 does not exists"
+   exit
+fi
 #######################################################
 #Reading variables
-selected_calculation=$(grep "calculation" $1 | awk '{print $3}' )
-selected_sampling=$(grep "type_of_sampling" $1 | awk '{print $3}')
-sampling_size=$(grep "sampling_size" $1 | awk '{print $3}')
+selected_calculation=$(grep "calculation" $input_file | awk '{print $3}' )
+selected_sampling=$(grep "type_of_sampling" $input_file | awk '{print $3}')
+sampling_size=$(grep "sampling_size" $input_file | awk '{print $3}')
+dir_name=$(grep "directory_name" $input_file | awk '{print $3}')
 
 #######################################################
 if [ $selected_calculation = 1 ]
 then
-   echo " Performing data extraction from $1"
+   echo " Extracting data from $1"
    echo " "
    ## Determina número de átomos
    Nat=$(grep "| Number of atoms" $1  | awk '{print $6}')
@@ -127,11 +155,22 @@ then
    echo "Calculating average geometric distortions and collecting into desv.csv"
    echo " "
    ./geometries.exe > desv.csv
+   if [ -d $dir_name ]
+   then
+      echo -e \\e[91m  "$dir_name directory already exists ... moving existing $dir_name to \"other_$dir_name\" "
+      echo "current data will be saved to $dir_name"
+      echo -e \\e[32m " "
+      mv $dir_name other_$dir_name
+   fi
+   mkdir $dir_name
+   cd $dir_name
    mkdir data
-   mv forces_*fhi data
-   mv coords_*fhi data
-   mv positions*fhi data
-   mv velocities*fhi data
+      echo -e \\e[32m " "
+   cd ..
+   mv forces_*fhi $dir_name/data
+   mv coords_*fhi $dir_name/data
+   mv positions*fhi $dir_name/data
+   mv velocities*fhi $dir_name/data
    mkdir selected_data
    rm atoms zeros energias* temp*
 
@@ -148,10 +187,12 @@ then
    if [ -f error ]
    then
       echo -e \\e[91m " An error with Python ocurred when sampling data: " ; echo " "
-      cat error
+      cat error ; rm error
+      echo -e \\e[32m " "
    else
       echo "Data correctly sampled" ; echo " "
    fi
+   cd $dir_name
    if [ -d selected_data ]
    then
       echo " " > /dev/null
@@ -159,11 +200,12 @@ then
       mkdir selected_data
    fi
 
-   for i in $(cat selected_points.csv | tr '\n' ' ')
+   for i in $(cat ../selected_points.csv | tr '\n' ' ')
    do
       cp data/coords_${i}.fhi selected_data
       cat data/coords_${i}.fhi >> selected_data/training.dat
    done
+   mv ../*.csv .
 fi
 
 if [ $calculation = 1 ] || [ $calculation = 2 ] || [ $calculation = 3 ]
