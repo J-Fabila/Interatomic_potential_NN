@@ -9,4 +9,5 @@ type_of_sampling = 1 #  1-Monte Carlo    2-Uniform   3-Random
 sampling_size = 0.5  # Fraction to sample from the entire MD steps
 
 
+directory_name = prueba
 
