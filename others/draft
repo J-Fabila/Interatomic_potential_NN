@@ -1,39 +1,29 @@
 echo -e \\e[32m  " "
-
-case $# in
-   0)
-      echo -e \\e[91m "No input data file provided"
-
-      exit
-   ;;
-   1)
-      echo "No input file provided ... reading default \"input.txt\" file" ; echo " "
-      input_file=input.txt
-   ;;
-   2)
-      echo "Reading input file \"$2\" "
-      input_file=$(echo $2)
-   ;;
-esac
-
-if ! [ -f $input_file ]
-then
-   echo  -e \\e[91m " $input_file does not exists"
-   exit
-fi
-
-if ! [ -f $1 ]
-then
-   echo  -e \\e[91m " $1 does not exists"
-   exit
-fi
-#######################################################
-#Reading variables
+echo "Reading input.txt file  "
+input_file=input.txt
 selected_calculation=$(grep "calculation" $input_file | awk '{print $3}' )
 selected_sampling=$(grep "type_of_sampling" $input_file | awk '{print $3}')
 sampling_size=$(grep "sampling_size" $input_file | awk '{print $3}')
 dir_name=$(grep "directory_name" $input_file | awk '{print $3}')
 
+case $# in
+   0)
+      if [ $selected_calculation = 1 ]
+      then
+         echo -e \\e[91m "No input data file provided"
+         exit
+      fi
+   ;;
+   1)
+      if ! [ -f $1 ]
+      then
+         echo  -e \\e[91m " $1 file does not exists"
+         exit
+      fi
+   ;;
+esac
+
+#######################################################
 #######################################################
 if [ $selected_calculation = 1 ]
 then
@@ -44,7 +34,7 @@ then
    ## Determina número de configuraciones (pasos)
    Nconf=$(grep "Self-consistency cycle converged" $1  | wc -l)
    ## Obtiene coordenadas iniciales
-   grep -A$((5+$(echo $Nat))) "Parsing geometry.in (first pass over file, find array dimensions only)." $1  | grep "atom" > configuracion_inicial.fhi
+   grep -A$((5+$(echo $Nat))) "Parsing geometry.in (first pass over file, find array dimensions only)." $1  | grep "atom" > initial_configuration.fhi
    ## Extrae lista de energias
    echo  -e \\e[32m "Extracting uncorrected energy data"
    echo " "
@@ -101,9 +91,9 @@ then
        local barsize=$1
        local base=$2
        local current=$3
-       local top=$4        
-       local j=0 
-       local progress=$(( ($barsize * ( $current - $base )) / ($top - $base ) )) 
+       local top=$4
+       local j=0
+       local progress=$(( ($barsize * ( $current - $base )) / ($top - $base ) ))
        echo -n "["
        for ((j=0; j < $progress; j++)) ; do echo -n '='; done
        echo -n '=>'
@@ -165,30 +155,53 @@ then
    mkdir $dir_name
    cd $dir_name
    mkdir data
-      echo -e \\e[32m " "
+   mkdir selected_data
    cd ..
    mv forces_*fhi $dir_name/data
    mv coords_*fhi $dir_name/data
    mv positions*fhi $dir_name/data
    mv velocities*fhi $dir_name/data
-   mkdir selected_data
-   rm atoms zeros energias* temp*
-
+   rm atoms zeros energias* temp* forces.dat
+   mv *csv $dir_name
+   mv movie.xyz $dir_name
+   mv initial_configuration.fhi $dir_name
 fi
 
-if [ $calculation = 1 ] || [$calculation = 2 ]
+if [ $selected_calculation = 1 ] || [ $selected_calculation = 2 ]
 then
    echo " "
    echo "Executing python sampling" ; echo " "
-   echo "Sampling method selected:  $sampling_method" ; echo " "
+   echo -n "Sampling method selected:  "
+   case $selected_sampling in
+      1)
+         echo -e " Monte Carlo \n"
+      ;;
+      2)
+         echo -e " Uniform distribution \n"
+      ;;
+      3)
+         echo -e " Random \n"
+      ;;
+      4)
+         echo -e " Cutted trajectory \n"
+      ;;
+      *)
+         echo -e \\e[91m " $selected_sampling is not a valid option \n"
+         echo -e "Aborting execution \n"
+         exit
+      ;;
+   esac
 
-   python3 sampling.py $sampling_method $sampling_parameter $sampling_size 2> error
+   python3 sampling.py $selected_sampling $sampling_parameter $sampling_size 2> error
 
    if [ -f error ]
    then
       echo -e \\e[91m " An error with Python ocurred when sampling data: " ; echo " "
       cat error ; rm error
-      echo -e \\e[32m " "
+      echo " "; echo " "
+      echo -e \\e[32m " " ; echo "Aborting execution" ; echo " "
+
+      exit
    else
       echo "Data correctly sampled" ; echo " "
    fi
@@ -211,6 +224,7 @@ fi
 if [ $calculation = 1 ] || [ $calculation = 2 ] || [ $calculation = 3 ]
 then
    #RUNNING N2P2
+    echo "RUNNING N2P2"
 fi
 
 ## Alternativa split
