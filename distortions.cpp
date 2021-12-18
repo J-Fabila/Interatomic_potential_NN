@@ -7,13 +7,13 @@ string command, current_file, num;
 
 int main(int argc, char **argv)
 {
-   initial.read_fhi("configuracion_inicial.fhi");
-   initial.print_xyz("pelicula.xyz");
-   N_step=int_pipe("ls posiciones_*.fhi | wc -l ");//comando numero de configuraciones bash
+   initial.read_fhi("initial_configuration.fhi");
+   initial.print_xyz("movie.xyz");
+   N_step=int_pipe("ls positions_*.fhi | wc -l ");//comando numero de configuraciones bash
    for(geom=2;geom<=N_step;geom++)
    {
       num=to_string(geom);
-      current_file="posiciones_"+num;
+      current_file="positions_"+num;
       current_file+=".fhi"; //g definir el nombre
       current.read_fhi(current_file);
       // Diferencia entre la inicial y la actual
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
       acumulado=acumulado/initial.Nat; // Este es el desplazamiento promedio
       cout<<geom<<","<<acumulado<<endl;
       current.print_xyz("temp");
-      system("cat temp >> pelicula.xyz");
+      system("cat temp >> movie.xyz");
    }
    return 0;
 }
