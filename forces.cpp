@@ -7,20 +7,20 @@ string command, current_file, num;
 
 int main(int argc, char **argv)
 {
-   system("awk '{print \" atom \" $3 \" \" $4 \" \" $5 \" F \" }' fuerzas_1.fhi > fuerzas.dat");
-   initial.read_fhi("fuerzas.dat");
-   N_step=int_pipe("ls posiciones_*.fhi | wc -l ");//comando numero de configuraciones bash
+   system("awk '{print \" atom \" $3 \" \" $4 \" \" $5 \" F \" }' forces_1.fhi > forces.dat");
+   initial.read_fhi("forces.dat");
+   N_step=int_pipe("ls positions_*.fhi | wc -l ");//comando numero de configuraciones bash
    for(geom=2;geom<=N_step;geom++)
    {
       num=to_string(geom);
-      current_file="fuerzas_"+num;
+      current_file="forces_"+num;
       current_file+=".fhi"; //g definir el nombre
       ///////////////
-      command ="awk '{print \" atom \" $3 \" \" $4 \" \" $5 \" F \" }' fuerzas_";
+      command ="awk '{print \" atom \" $3 \" \" $4 \" \" $5 \" F \" }' forces_";
       command+=num;
-      command+=".fhi > fuerzas.dat";
+      command+=".fhi > forces.dat";
       system(command.c_str());
-      current.read_fhi("fuerzas.dat");
+      current.read_fhi("forces.dat");
       // Diferencia entre la inicial y la actual
       acumulado=0;
       for(a=1;a<=initial.Nat;a++)
