@@ -192,7 +192,7 @@ then
       ;;
    esac
 
-   python3 sampling.py $selected_sampling $sampling_parameter $sampling_size 2> error
+   python3 sampling.py $dir_name $selected_sampling $sampling_size $sampling_parameter 2> error
 
    if [ -f error ]
    then
