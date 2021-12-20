@@ -1,5 +1,5 @@
 echo -e \\e[32m  " "
-echo -e " Reading input.txt file  \n"
+echo "Reading input.txt file  "
 input_file=input.txt
 selected_calculation=$(grep "calculation" $input_file | awk '{print $3}' )
 sampling_parameter=$(grep "sampling_parameter" $input_file | awk '{print $3}')
@@ -195,10 +195,10 @@ then
 
    python3 sampling.py $dir_name $selected_sampling $sampling_size $sampling_parameter 2> error
 
-   if [ -f error ]
+   if [ -f error ] && [ $(wc -l error | awk '{print $1}') -gt 0 ]
    then
       echo -e \\e[91m " An error with Python ocurred when sampling data: " ; echo " "
-      cat error ; rm error
+      cat error ; echo " " ; rm error
       echo " "; echo " "
       echo -e \\e[32m " " ; echo "Aborting execution" ; echo " "
 
