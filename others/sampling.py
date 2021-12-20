@@ -90,7 +90,7 @@ def monte_carlo_forces(forces,temp): #solo fuerzas
     accepted=forces.loc[forces['Accepted']==True]
     accepted_index=list(accepted.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
-    return len(accepted.index)/forces.shape[0]
+    return len(accepted_index)/forces.shape[0]
 
 def monte_carlo_energies(energies,temp): #solo energias
     energies=energies-energies.mean()
@@ -99,7 +99,7 @@ def monte_carlo_energies(energies,temp): #solo energias
     accepted=energies.loc[energies['Accepted']==True]
     accepted_index=list(accepted.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
-    return len(accepted.index)/energies.shape[0]
+    return len(accepted_index)/energies.shape[0]
 
 def cutted_trajectory(input_data,frac=0.5):
     # Funciona para fuerzas y energas
