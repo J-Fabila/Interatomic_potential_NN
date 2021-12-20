@@ -8,14 +8,11 @@ import warnings
 import sys
 warnings.filterwarnings('ignore')
 
+################################ Lectura de parámetros
 path=sys.argv[1]
 selected_sampling=int(sys.argv[2])
 sampling_size=float(sys.argv[3])
 sampling_parameter=sys.argv[4]
-
-
-##################################### Lectura de datos
-
 ######################################################
 
 
@@ -93,7 +90,7 @@ def monte_carlo_forces(forces,temp): #solo fuerzas
     accepted=forces.loc[forces['Accepted']==True]
     accepted_index=list(accepted.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
-
+    return len(accepted.index)/forces.shape[0]
 
 def monte_carlo_energies(energies,temp): #solo energias
     energies=energies-energies.mean()
@@ -102,6 +99,7 @@ def monte_carlo_energies(energies,temp): #solo energias
     accepted=energies.loc[energies['Accepted']==True]
     accepted_index=list(accepted.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
+    return len(accepted.index)/energies.shape[0]
 
 def cutted_trajectory(input_data,frac=0.5):
     # Funciona para fuerzas y energas
@@ -113,20 +111,54 @@ def cutted_trajectory(input_data,frac=0.5):
 
 ######################################################
 
+##################################### Lectura de datos
+if sampling_parameter == 0: # Fuerzas
+    path=path+"/forces.csv"
+    forces  =pd.read_csv(path,names=["Force"])
+elif sampling_parameter == 1: #Energias
+    path=path+"/energies.csv"
+    energies  =pd.read_csv(path,names=["Corrected","Uncorrected","Free"])
+######################################################
+
+
 if selected_sampling == 1:
    #Monte Carlo
-elif selected_samplilng == 2:
+    if sampling_parameter == 0: #Forces
+        fraction=sampling_size
+        i=50
+        temp=1
+        frac=1
+        tolerancia=0.025
+        while  ( ((frac+tolerancia)<fraction) | ((frac-tolerancia)>fraction)):
+            frac=monte_carlo_forces(forces,temp)
+        #    print(frac,temp)
+            temp=temp+i
+            if temp>5000:
+                break
+   elif sampling_parameter ==1: #Energies
+        fraction=sampling_size
+        i=50
+        temp=1
+        frac=1
+        tolerancia=0.025
+        while  ( ((frac+tolerancia)<fraction) | ((frac-tolerancia)>fraction)):
+            frac=monte_carlo_energies(energies,temp)
+        #    print(frac,temp)
+            temp=temp+i
+            if temp>5000:
+                break
+
+elif selected_sampling == 2:
    #Uniform distribution
-elif selected_samplilng == 3:
+elif selected_sampling == 3:
    #Random
    if sampling_parameter == 0: #Forces
        random_sampling(forces,sampling_size)
    elif sampling_parameter ==1: #Energies
        random_sampling(energies,sampling_size)
-elif selected_samplilng == 4:
+elif selected_sampling == 4:
    #Cutted trajectory
    if sampling_parameter == 0: #Forces
        cutted_trajectory(forces,sampling_size)
    elif sampling_parameter ==1: #Energies
        cutted_trajectory(energies,sampling_size)
-
