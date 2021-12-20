@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_style("darkgrid")
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#sns.set_style("darkgrid")
 from sklearn.model_selection import train_test_split
 import warnings
 import sys
@@ -12,9 +12,8 @@ warnings.filterwarnings('ignore')
 path=sys.argv[1]
 selected_sampling=int(sys.argv[2])
 sampling_size=float(sys.argv[3])
-sampling_parameter=sys.argv[4]
+sampling_parameter=int(sys.argv[4])
 ######################################################
-
 
 ############################# Declaración de funciones
 
@@ -47,6 +46,7 @@ def uniform_sampling_forces(forces,rad=2.0,num_cuantiles=10):
     selected=pd.concat(frames)
     accepted_index=list(selected.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
+    return len(accepted_index)/forces.shape[0]
 
 def uniform_sampling_energies(energies,rad=2.0,num_cuantiles=10):
     # Works exclusively for forces
@@ -71,6 +71,7 @@ def uniform_sampling_energies(energies,rad=2.0,num_cuantiles=10):
     selected=pd.concat(frames)
     accepted_index=list(selected.index)
     pd.DataFrame(accepted_index).to_csv("selected_points.csv", index=False, header=False,sep=' ')
+    return len(accepted_index)/energies.shape[0]
 
 
 def monte_carlo(T,energy,energy_0):
@@ -120,7 +121,6 @@ elif sampling_parameter == 1: #Energias
     energies  =pd.read_csv(path,names=["Corrected","Uncorrected","Free"])
 ######################################################
 
-
 if selected_sampling == 1:
    #Monte Carlo
     if sampling_parameter == 0: #Forces
@@ -135,7 +135,7 @@ if selected_sampling == 1:
             temp=temp+i
             if temp>5000:
                 break
-   elif sampling_parameter ==1: #Energies
+    elif sampling_parameter ==1: #Energies
         fraction=sampling_size
         i=50
         temp=1
@@ -152,13 +152,13 @@ elif selected_sampling == 2:
    #Uniform distribution
     if sampling_parameter == 0: #Forces
         fraction=sampling_size
-        frac=1
+        frac=1.0
         i=0.05
         rad=1
-        tolerancia=0.01
+        tolerancia=0.025
         while  ( ((frac+tolerancia)<fraction) | ((frac-tolerancia)>fraction)):
             frac=uniform_sampling_forces(forces,rad,10)
-        #    print(frac,rad)
+#            print(frac,rad)
             rad=rad+i
             if rad>5:
                 break
@@ -168,10 +168,10 @@ elif selected_sampling == 2:
         frac=1
         i=0.05
         rad=1
-        tolerancia=0.01
+        tolerancia=0.025
         while  ( ((frac+tolerancia)<fraction) | ((frac-tolerancia)>fraction)):
             frac=uniform_sampling_energies(energies,rad,10)
-            print(frac,rad)
+#            print(frac,rad)
             rad=rad+i
             if rad>5:
                 break
@@ -188,4 +188,3 @@ elif selected_sampling == 4:
        cutted_trajectory(forces,sampling_size)
    elif sampling_parameter ==1: #Energies
        cutted_trajectory(energies,sampling_size)
-
