@@ -2,6 +2,7 @@ echo -e \\e[32m  " "
 echo -e " Reading input.txt file  \n"
 input_file=input.txt
 selected_calculation=$(grep "calculation" $input_file | awk '{print $3}' )
+sampling_parameter=$(grep "sampling_parameter" $input_file | awk '{print $3}')
 selected_sampling=$(grep "type_of_sampling" $input_file | awk '{print $3}')
 sampling_size=$(grep "sampling_size" $input_file | awk '{print $3}')
 dir_name=$(grep "directory_name" $input_file | awk '{print $3}')
