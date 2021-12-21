@@ -12,3 +12,10 @@ sampling_parameter = 0 # 0-Forces    1-Energies
 
 directory_name = prueba
 
+read_input = false # path to input.nn file, otherwise false
+
+generate_automatic_input = 1 # 0-False 1-True 
+
+n_hidden = 3  # Number of hidden layers
+
+n_neurons = 25 25 25 # Number of neurons each layer
