@@ -222,10 +222,60 @@ then
    mv ../*.csv .
 fi
 
-if [ $calculation = 1 ] || [ $calculation = 2 ] || [ $calculation = 3 ]
+if [ $selected_calculation = 1 ] || [ $selected_calculation = 2 ] || [ $selected_calculation = 3 ]
 then
-   #RUNNING N2P2
-    echo "RUNNING N2P2"
+   read_input=$(grep "read_input" $input_file | awk '{print $3}' )
+   generate_automatic_input=$(grep "generate_automatic_input" $input_file | awk '{print $3}' )
+   if [ $(echo $read_input | tr '[:upper:]' '[:lower:]' ) = "false" ] ||  [ $(echo $read_input | tr '[:upper:]' '[:lower:]' ) = "no" ] || [ $read_input = "0" ] [ $(echo $read_input | tr '[:upper:]' '[:lower:]' ) = ".false." ]
+   then
+      echo -e " No input file given \n"
+      if [ generate_automatic_input = 1 ]
+      then
+         echo " Generating automatic input file "
+         n_hidden=$(grep "n_hidden" $input_file | awk '{print $3}' )
+         n_neurons=$(grep "n_neurons" $input_file | cut -d"=" -f2 | cut -d"#" -f1)
+         activations=$(for i in $(echo $n_neurons) ; do  echo -n "t " ; done ; echo "l")
+         elements=$(cat $dir_name/initial_configuration.fhi  | awk '{print $5}' | sort | uniq | tr '\n' ' ')
+         n_elements=$(cat $dir_name/initial_configuration.fhi  | awk '{print $5}' | sort | uniq | wc -l )
+#================================================================================================================================
+echo "###############################################################################
+# Length unit     : Angstrom
+# Energy unit     : eV
+# Reference method: PBE
+###############################################################################
+
+###############################################################################
+# GENERAL NNP SETTINGS
+###############################################################################
+# These keywords are (almost) always required.
+number_of_elements              $n_elements
+elements                        $elements
+cutoff_type                     6 0.0          # Cutoff type.
+#scale_symmetry_functions                       # Scale all symmetry functions with min/max values.
+scale_symmetry_functions_sigma                 # Scale all symmetry functions with sigma.
+scale_min_short                 0.0            # Minimum value for scaling.
+scale_max_short                 1.0            # Maximum value for scaling.
+#center_symmetry_functions                      # Center all symmetry functions, i.e. subtract mean value.
+global_hidden_layers_short      $n_hidden              # Number of hidden layers.
+global_nodes_short              $n_neurons          # Number of nodes in each hidden layer.
+global_activation_short         $activations          # Activation function for each hidden layer and output layer.
+#normalize_nodes                                # Normalize input of nodes."> input.nn
+#================================================================================================================================
+         mv input.nn $dir_name
+      else
+         echo " generate_automatic_input variable was setted to 0 (false)"
+         echo -e " no input file will be generated \n"
+         echo " Stoping execution"
+         exit
+      fi
+   else
+      echo -e " Working with given $read_input file \n"
+      mv $read_input $dir_name/
+   fi
+   cd $dir_name
+   #train?
+
+
 fi
 
 ## Alternativa split
