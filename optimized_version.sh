@@ -46,7 +46,7 @@ then
    echo " Extracting data from $1"
    echo " "
    ## Determina número de átomos
-   Nat=$(grep "| Number of atoms" $1  | awk '{print $6}')
+   Nat=$(grep -m 1 "| Number of atoms" $1  | awk '{print $6}')
    ## Determina número de configuraciones (pasos)
    Nconf=$(grep "Self-consistency cycle converged" $1  | wc -l)
    ## Obtiene coordenadas iniciales
