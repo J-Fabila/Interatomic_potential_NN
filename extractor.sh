@@ -223,11 +223,11 @@ then
    frac=$(echo "scale=3; $num_points / $Nconf *100" | bc -l)
    echo " $num_points were selected  out of $Nconf (${frac}%)"; echo " "
    iter=1
-   rm selected_data/train.data 2> /dev/null
+   rm selected_data/input.data 2> /dev/null
    for i in $(cat ../selected_points.csv | tr '\n' ' ')
    do
       cp data/coords_${i}.fhi selected_data
-      cat data/coords_${i}.fhi >> selected_data/train.data
+      cat data/coords_${i}.fhi >> selected_data/input.data
       redraw_progress_bar 50 1 $iter $num_points
       echo -ne "[\r"
       iter=$(($iter+1))
