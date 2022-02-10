@@ -223,7 +223,10 @@ then
    frac=$(echo "scale=3; $num_points / $Nconf *100" | bc -l)
    echo " $num_points were selected  out of $Nconf (${frac}%)"; echo " "
    iter=1
-   rm selected_data/input.data 2> /dev/null
+   cd selected_data
+   rm input.data 2> /dev/null
+   rm coords* 2> /dev/null
+   cd ..
    for i in $(cat ../selected_points.csv | tr '\n' ' ')
    do
       cp data/coords_${i}.fhi selected_data
