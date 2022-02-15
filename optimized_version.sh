@@ -111,7 +111,7 @@ then
    yes "atom " | head -$nl > atoms
    yes " 0.0 0.0 " | head -$nl > zeros
    cat archivos | parallel echo begin ">" coords_{}
-   cat archivos | parallel echo comment configuration {} of $Nconf" >> coords_{}
+   cat archivos | parallel echo comment configuration {} of $Nconf ">>" coords_{}
 
    cat archivos | parallel awk \'{print $2" "$3" "$4" "$5}\' posiciones_{} ">" posiciones_{}.temp
    cat archivos | parallel awk \'{print $2" "$3" "$4" "$5}\' fuerzas_{} ">" fuerzas_{}.temp
